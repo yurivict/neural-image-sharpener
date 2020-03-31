@@ -1,0 +1,3 @@
+[submodule "MiniDNN"]
+	path = 3rdparty/MiniDNN
+	url = https://github.com/yixuan/MiniDNN
