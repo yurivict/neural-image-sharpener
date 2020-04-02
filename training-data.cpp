@@ -2,6 +2,7 @@
 #include "misc.h"
 #include "training-data.h"
 
+#include <assert.h>
 #include <png++/png.hpp>
 
 #include <memory>
@@ -25,7 +26,7 @@ static std::vector<std::string> getFilesWithExtension(const std::string &dir, co
 
 /// interface
 
-Images* load(const std::string &dir) {
+const Images* load(const std::string &dir) {
 	auto files = getFilesWithExtension(dir, ".png"); // XXX we ony support png files for now
 	if (files.empty())
 		FAIL("no PNG files were found in the directory " << dir)
@@ -49,6 +50,19 @@ Images* load(const std::string &dir) {
 				
 	}
 	return images.release();
+}
+
+size_t calcNumTrainingDataSamples(const Images &trainingData, unsigned imageMarginPercent, unsigned lowResOuterSize, unsigned highResInnerSize) {
+	size_t numTrainingDataSamples = 0;
+	auto one = [&](unsigned width, unsigned height) {
+		unsigned w = width  - 2*(width*imageMarginPercent)  - lowResOuterSize*highResInnerSize;
+		unsigned h = height - 2*(height*imageMarginPercent) - lowResOuterSize*highResInnerSize;
+		assert(w < width && h < height);
+		return w*h;
+	};
+	for (auto &img : trainingData)
+		numTrainingDataSamples += one(std::get<0>(img.second), std::get<1>(img.second));
+	return numTrainingDataSamples;
 }
 
 }

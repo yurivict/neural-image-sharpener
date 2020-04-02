@@ -28,8 +28,14 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 ##
 find_package(png++ REQUIRED)
 find_package(PNG REQUIRED)
+find_package (Eigen3 3.3 REQUIRED) # required by MiniDNN
 
 include_directories(${png++_INCLUDE_DIRS})
+
+##
+## Bundled dependencies
+##
+include_directories(${PROJECT_SOURCE_DIR}/3rdparty/MiniDNN/include)
 
 ##
 ## Targets
@@ -37,12 +43,14 @@ include_directories(${png++_INCLUDE_DIRS})
 add_executable(nn-train-image-sharpener
 	train.cpp
 	training-data.cpp
+	neural-network.cpp
 )
 add_executable(nn-sharpen-image
 	sharpen.cpp
 )
 target_link_libraries(nn-train-image-sharpener
 	${png++_LIBRARIES}
+	Eigen3::Eigen
 )
 target_link_libraries(nn-sharpen-image
 	${png++_LIBRARIES}
